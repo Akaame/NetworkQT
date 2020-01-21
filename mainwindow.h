@@ -3,8 +3,14 @@
 
 #include <QMainWindow>
 #include <QJsonDocument>
-#include "restclient.h"
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QSslConfiguration>
+#include "QHttp2Configuration"
 #include "jsonhighlighter.h"
+#include <QPointer>
+#include "QUrlQuery"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -17,11 +23,10 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    RestClient* r;
+    QPointer<QNetworkAccessManager> client;
 
 private slots:
     void on_pushButton_clicked();
-
     void on_lineEdit_returnPressed();
 
 private:

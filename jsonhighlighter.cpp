@@ -15,6 +15,8 @@ JsonHighlighter::JsonHighlighter(QTextDocument* parent):QSyntaxHighlighter(paren
     stringFormat.setForeground(Qt::blue);
     stringEl.format = stringFormat;
     rules.append(stringEl);
+
+    // Add null and booleans
 }
 
 JsonHighlighter::~JsonHighlighter()

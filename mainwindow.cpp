@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+    client = new QNetworkAccessManager();
     ui->setupUi(this);
     ui->lineEdit->setFocus();
     ui->comboBox->addItem("GET");
@@ -33,30 +34,43 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    delete r;
     delete ui;
 }
 
-
-// Set enter too TODO
-
 void MainWindow::on_pushButton_clicked()
 {
-    r = new RestClient();
-    auto ret = r->Get(ui->lineEdit->text());
-    qDebug().noquote() << ret->readAll();
-    QObject::connect(ret.data(), &QNetworkReply::finished, [=]() {
-        // qDebug().noquote() <<ret->readAll();
-        QJsonDocument doc = QJsonDocument::fromJson(ret->readAll());
-        qDebug() << doc.toJson();
+    QUrl qurl(ui->lineEdit->text());
+    QNetworkRequest req(qurl);
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "*/*");
+    req.setAttribute(QNetworkRequest::HTTP2AllowedAttribute, QVariant(true));
+    QNetworkReply* reply;
+    QUrlQuery query;
+    // get postman like table view of to line edits
+    // this is so ugly omg kill me
+    auto opSwitch = ui->comboBox->currentText();
+    if (opSwitch == "GET")
+        reply = client->get(req);        
+    if (opSwitch == "HEAD")
+        reply = client->head(req);
+    if (opSwitch == "POST")
+        reply = client->post(req, query.query().toUtf8()); // to be continued
+
+    QObject::connect(reply, &QNetworkReply::finished, [=]() {
+        QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
         ui->textEdit->setText(doc.toJson());
+        reply->deleteLater(); // kore mo smooth desu
     });
 
-    auto highlighter = new JsonHighlighter(ui->textEdit->document()); // How does this work anyway?
+    auto highlighter = new JsonHighlighter(ui->textEdit->document());
+    // Where does our highlightBlock gets triggered anyway?
+
+
+    // Valgrinding ?
+    // Diagnostics ?
 }
 
 
 void MainWindow::on_lineEdit_returnPressed()
 {
-    emit ui->pushButton->clicked();
+    emit ui->pushButton->clicked(); // Smooth desu
 }

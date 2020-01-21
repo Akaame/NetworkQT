@@ -19,13 +19,11 @@ LIBS += -L/home/sddk/Qt/Tools/OpenSSL/binary/lib
 SOURCES += \
     jsonhighlighter.cpp \
     main.cpp \
-    mainwindow.cpp \
-    restclient.cpp
+    mainwindow.cpp
 
 HEADERS += \
     jsonhighlighter.h \
-    mainwindow.h \
-    restclient.h
+    mainwindow.h
 
 FORMS += \
     mainwindow.ui
